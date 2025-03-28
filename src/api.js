@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Base URL for the API
-const API_URL = 'http://localhost:8080/tickets';
+const API_URL = 'https://ticketing-system-backend-29o2.onrender.com/tickets';
 
 /**
  * Fetch the current ticket status from the server.
