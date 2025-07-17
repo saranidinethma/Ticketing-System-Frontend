@@ -54,68 +54,55 @@ const ConfigurationForm = () => {
     }
   }
 
+  const formFields = [
+    { label: 'Total Tickets', value: totalTickets, setter: setTotalTickets, placeholder: 'e.g., 100', error: errors.totalTickets },
+    { label: 'Release Rate (tickets/sec)', value: ticketReleaseRate, setter: setTicketReleaseRate, placeholder: 'e.g., 5', error: errors.ticketReleaseRate },
+    { label: 'Retrieval Rate', value: customerRetrievalRate, setter: setCustomerRetrievalRate, placeholder: 'e.g., 3', error: errors.customerRetrievalRate },
+    { label: 'Max Capacity', value: maxTicketCapacity, setter: setMaxTicketCapacity, placeholder: 'e.g., 200', error: errors.maxTicketCapacity }
+  ]
+
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-      <div className="flex items-center gap-2 mb-4">
-        <FaCog className="text-secondary text-xl" />
-        <h2 className="text-2xl font-semibold text-dark">Configure System</h2>
-      </div>
-      <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-dark">Total Tickets</label>
-          <input
-            type="number"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-secondary focus:ring focus:ring-secondary focus:ring-opacity-50"
-            placeholder="e.g., 100"
-            value={totalTickets}
-            onChange={(e) => setTotalTickets(e.target.value)}
-            required
-          />
-          {errors.totalTickets && <p className="text-red-500 text-sm mt-1">{errors.totalTickets}</p>}
+    <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl hover:shadow-purple-500/20 transition-all duration-500 hover:scale-[1.02] group">
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      <div className="relative z-10">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl shadow-lg">
+            <FaCog className="text-white text-xl animate-spin" />
+          </div>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+            Configure System
+          </h2>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-dark">Release Rate (tickets/sec)</label>
-          <input
-            type="number"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-secondary focus:ring focus:ring-secondary focus:ring-opacity-50"
-            placeholder="e.g., 5"
-            value={ticketReleaseRate}
-            onChange={(e) => setTicketReleaseRate(e.target.value)}
-            required
-          />
-          {errors.ticketReleaseRate && <p className="text-red-500 text-sm mt-1">{errors.ticketReleaseRate}</p>}
+        
+        <div className="space-y-6">
+          {formFields.map((field, index) => (
+            <div key={index} className="relative">
+              <label className="block text-sm font-semibold text-white/90 mb-2">{field.label}</label>
+              <input
+                type="number"
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent backdrop-blur-sm transition-all duration-300"
+                placeholder={field.placeholder}
+                value={field.value}
+                onChange={(e) => field.setter(e.target.value)}
+                required
+              />
+              {field.error && (
+                <p className="text-red-400 text-sm mt-1 animate-pulse">{field.error}</p>
+              )}
+            </div>
+          ))}
+          
+          <button
+            onClick={handleSubmit}
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-purple-500/50 transition-all duration-300 disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-95 relative overflow-hidden"
+            disabled={isButtonDisabled || loading}
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 opacity-0 hover:opacity-20 transition-opacity duration-300"></div>
+            <span className="relative z-10">
+              {loading ? 'Setting...' : 'Set Configuration'}
+            </span>
+          </button>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-dark">Retrieval Rate</label>
-          <input
-            type="number"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-secondary focus:ring focus:ring-secondary focus:ring-opacity-50"
-            placeholder="e.g., 3"
-            value={customerRetrievalRate}
-            onChange={(e) => setCustomerRetrievalRate(e.target.value)}
-            required
-          />
-          {errors.customerRetrievalRate && <p className="text-red-500 text-sm mt-1">{errors.customerRetrievalRate}</p>}
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-dark">Max Capacity</label>
-          <input
-            type="number"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-secondary focus:ring focus:ring-secondary focus:ring-opacity-50"
-            placeholder="e.g., 200"
-            value={maxTicketCapacity}
-            onChange={(e) => setMaxTicketCapacity(e.target.value)}
-            required
-          />
-          {errors.maxTicketCapacity && <p className="text-red-500 text-sm mt-1">{errors.maxTicketCapacity}</p>}
-        </div>
-        <button
-          onClick={handleSubmit}
-          className="w-full bg-secondary text-white py-2 rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-          disabled={isButtonDisabled || loading}
-        >
-          {loading ? 'Setting...' : 'Set Configuration'}
-        </button>
       </div>
     </div>
   )
