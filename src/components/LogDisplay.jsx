@@ -69,94 +69,126 @@ const LogDisplay = () => {
 
   const getLogStyle = (type) => {
     switch (type) {
-      case 'vendor': return { color: '#28a745', fontWeight: 'bold' }
-      case 'customer': return { color: '#007bff', fontWeight: 'normal' }
-      case 'cancel': return { color: '#dc3545', fontWeight: 'normal' }
-      case 'admin': return { color: '#6f42c1', fontWeight: 'bold' }
-      case 'error': return { color: '#dc3545', fontWeight: 'bold' }
-      case 'warning': return { color: '#ffc107', fontWeight: 'bold' }
-      case 'system': return { color: '#17a2b8', fontWeight: 'normal' }
-      default: return { color: '#6c757d', fontWeight: 'normal' }
+      case 'vendor': return 'text-green-300 border-l-4 border-green-400 bg-green-500/10'
+      case 'customer': return 'text-blue-300 border-l-4 border-blue-400 bg-blue-500/10'
+      case 'cancel': return 'text-red-300 border-l-4 border-red-400 bg-red-500/10'
+      case 'admin': return 'text-purple-300 border-l-4 border-purple-400 bg-purple-500/10'
+      case 'error': return 'text-red-300 border-l-4 border-red-400 bg-red-500/20'
+      case 'warning': return 'text-yellow-300 border-l-4 border-yellow-400 bg-yellow-500/10'
+      case 'system': return 'text-cyan-300 border-l-4 border-cyan-400 bg-cyan-500/10'
+      default: return 'text-gray-300 border-l-4 border-gray-400 bg-gray-500/10'
     }
   }
 
+  const actionButtons = [
+    { 
+      icon: FaSync, 
+      label: loading ? 'Loading...' : 'Refresh', 
+      onClick: fetchLogs, 
+      gradient: 'from-indigo-500 to-purple-500',
+      disabled: loading
+    },
+    { 
+      icon: FaClock, 
+      label: autoRefresh ? 'Auto On' : 'Auto Off', 
+      onClick: toggleAutoRefresh, 
+      gradient: autoRefresh ? 'from-green-500 to-emerald-500' : 'from-gray-500 to-gray-600',
+      disabled: false
+    },
+    { 
+      icon: FaTrash, 
+      label: 'Clear', 
+      onClick: handleClearLogs, 
+      gradient: 'from-red-500 to-rose-500',
+      disabled: loading
+    }
+  ]
+
+  const legendItems = [
+    { type: 'vendor', color: 'bg-green-500', label: 'Vendor' },
+    { type: 'customer', color: 'bg-blue-500', label: 'Customer' },
+    { type: 'cancel', color: 'bg-red-500', label: 'Cancellation' },
+    { type: 'admin', color: 'bg-purple-500', label: 'Admin' },
+    { type: 'system', color: 'bg-cyan-500', label: 'System' },
+  ]
+
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold text-dark flex items-center gap-2">
-          <FaClock className="text-secondary" /> System Logs
-        </h2>
-        <div className="flex gap-2">
-          <button
-            onClick={fetchLogs}
-            disabled={loading}
-            className="bg-secondary text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
-          >
-            <FaSync /> {loading ? 'Loading...' : 'Refresh'}
-          </button>
-          <button
-            onClick={toggleAutoRefresh}
-            className={`px-4 py-2 rounded-md text-white ${autoRefresh ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-500 hover:bg-gray-600'} transition-colors flex items-center gap-2`}
-          >
-            <FaClock /> {autoRefresh ? 'Auto On' : 'Auto Off'}
-          </button>
-          <button
-            onClick={handleClearLogs}
-            disabled={loading}
-            className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
-          >
-            <FaTrash /> Clear
-          </button>
-        </div>
-      </div>
-      {error && (
-        <div className="bg-red-100 text-red-700 p-3 rounded-md mb-4">
-          {error}
-        </div>
-      )}
-      <div className="flex flex-wrap gap-4 mb-4">
-        {[
-          { type: 'vendor', color: '#28a745', label: 'Vendor' },
-          { type: 'customer', color: '#007bff', label: 'Customer' },
-          { type: 'cancel', color: '#dc3545', label: 'Cancellation' },
-          { type: 'admin', color: '#6f42c1', label: 'Admin' },
-          { type: 'system', color: '#17a2b8', label: 'System' },
-        ].map(({ type, color, label }) => (
-          <div key={type} className="flex items-center">
-            <span className="w-3 h-3 rounded-sm mr-2" style={{ backgroundColor: color }}></span>
-            <span>{label}</span>
+    <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl hover:shadow-indigo-500/20 transition-all duration-500 hover:scale-[1.01] group">
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      <div className="relative z-10">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-3">
+            <div className="p-3 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl shadow-lg">
+              <FaClock className="text-white text-xl" />
+            </div>
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+              System Logs
+            </h2>
           </div>
-        ))}
-      </div>
-      <div
-        ref={logListRef}
-        className="h-96 overflow-y-auto border border-gray-200 rounded-md p-4 bg-light font-mono text-sm"
-      >
-        {logs.length > 0 ? (
-          logs.map((log, index) => {
-            if (!log) return null
-            const logStr = typeof log === 'string' ? log : JSON.stringify(log)
-            const logType = getLogType(logStr)
-            const logStyle = getLogStyle(logType)
-            return (
-              <div
+          
+          <div className="flex gap-3">
+            {actionButtons.map((btn, index) => (
+              <button
                 key={index}
-                className="py-2 border-b border-gray-100 last:border-b-0 break-words"
-                style={logStyle}
+                onClick={btn.onClick}
+                disabled={btn.disabled}
+                className={`bg-gradient-to-r ${btn.gradient} text-white px-4 py-2 rounded-xl font-medium shadow-lg hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-95 flex items-center gap-2`}
               >
-                {logStr}
-              </div>
-            )
-          })
-        ) : (
-          <div className="text-center text-gray-500 py-8">
-            {loading ? 'Loading logs...' : 'No logs available. Start the system to generate logs.'}
+                <btn.icon className="text-sm" />
+                <span className="text-sm">{btn.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+        
+        {error && (
+          <div className="bg-red-500/20 border border-red-500/40 text-red-300 p-4 rounded-xl mb-6">
+            {error}
           </div>
         )}
-      </div>
-      <div className="flex justify-between text-sm text-gray-500 mt-2">
-        <span>Total logs: {logs.length}</span>
-        <span>{autoRefresh ? 'Auto-refreshing every 3s' : 'Auto-refresh disabled'}</span>
+        
+        <div className="flex flex-wrap gap-4 mb-6">
+          {legendItems.map(({ type, color, label }) => (
+            <div key={type} className="flex items-center gap-2">
+              <div className={`w-3 h-3 ${color} rounded-full shadow-lg`}></div>
+              <span className="text-white/80 text-sm font-medium">{label}</span>
+            </div>
+          ))}
+        </div>
+        
+        <div
+          ref={logListRef}
+          className="h-96 overflow-y-auto backdrop-blur-sm bg-black/30 border border-white/10 rounded-2xl p-6 font-mono text-sm"
+        >
+          {logs.length > 0 ? (
+            logs.map((log, index) => {
+              if (!log) return null
+              const logStr = typeof log === 'string' ? log : JSON.stringify(log)
+              const logType = getLogType(logStr)
+              const logStyle = getLogStyle(logType)
+              return (
+                <div
+                  key={index}
+                  className={`py-3 px-4 mb-2 rounded-lg ${logStyle} transition-all duration-300 hover:bg-opacity-20 break-words`}
+                >
+                  {logStr}
+                </div>
+              )
+            })
+          ) : (
+            <div className="text-center text-white/60 py-16">
+              <div className="text-4xl mb-4">📋</div>
+              <div className="text-lg">
+                {loading ? 'Loading logs...' : 'No logs available. Start the system to generate logs.'}
+              </div>
+            </div>
+          )}
+        </div>
+        
+        <div className="flex justify-between text-sm text-white/60 mt-4">
+          <span>Total logs: {logs.length}</span>
+          <span>{autoRefresh ? 'Auto-refreshing every 3s' : 'Auto-refresh disabled'}</span>
+        </div>
       </div>
     </div>
   )

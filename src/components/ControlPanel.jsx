@@ -42,33 +42,59 @@ const ControlPanel = () => {
     }
   }
 
+  const buttons = [
+    { 
+      label: 'Start System', 
+      icon: FaPlay, 
+      onClick: handleStart, 
+      gradient: 'from-emerald-500 to-teal-500', 
+      hoverShadow: 'hover:shadow-emerald-500/50' 
+    },
+    { 
+      label: 'Stop System', 
+      icon: FaStop, 
+      onClick: handleStop, 
+      gradient: 'from-red-500 to-rose-500', 
+      hoverShadow: 'hover:shadow-red-500/50' 
+    },
+    { 
+      label: 'Reset System', 
+      icon: FaRedo, 
+      onClick: handleReset, 
+      gradient: 'from-amber-500 to-orange-500', 
+      hoverShadow: 'hover:shadow-amber-500/50' 
+    }
+  ]
+
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
-      <h2 className="text-2xl font-semibold text-dark mb-4 flex items-center gap-2">
-        <FaPlay className="text-secondary" /> Control Panel
-      </h2>
-      <div className="flex gap-4">
-        <button
-          onClick={handleStart}
-          className="flex-1 bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          disabled={loading}
-        >
-          <FaPlay /> {loading ? 'Starting...' : 'Start System'}
-        </button>
-        <button
-          onClick={handleStop}
-          className="flex-1 bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          disabled={loading}
-        >
-          <FaStop /> {loading ? 'Stopping...' : 'Stop System'}
-        </button>
-        <button
-          onClick={handleReset}
-          className="flex-1 bg-yellow-500 text-white py-2 rounded-md hover:bg-yellow-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          disabled={loading}
-        >
-          <FaRedo /> {loading ? 'Resetting...' : 'Reset System'}
-        </button>
+    <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl hover:shadow-blue-500/20 transition-all duration-500 hover:scale-[1.02] group">
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      <div className="relative z-10">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-3 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl shadow-lg">
+            <FaPlay className="text-white text-xl" />
+          </div>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+            Control Panel
+          </h2>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {buttons.map((button, index) => (
+            <button
+              key={index}
+              onClick={button.onClick}
+              className={`bg-gradient-to-r ${button.gradient} text-white py-4 px-6 rounded-xl font-semibold shadow-lg ${button.hoverShadow} transition-all duration-300 disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed hover:scale-105 active:scale-95 flex items-center justify-center gap-2 relative overflow-hidden`}
+              disabled={loading}
+            >
+              <div className="absolute inset-0 bg-white/20 opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+              <button.icon className="relative z-10" />
+              <span className="relative z-10">
+                {loading ? 'Loading...' : button.label}
+              </span>
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   )
