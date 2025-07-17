@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://ticketing-system-backend-29o2.onrender.com/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://ticketing-system-backend-29o2.onrender.com';
 
 export const configureSystem = async (config) => {
   try {
